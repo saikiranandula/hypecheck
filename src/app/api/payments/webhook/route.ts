@@ -1,12 +1,24 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-import { WebhookPayload } from 'dodopayments/resources/misc/webhookEvents'
 import { Webhook } from 'standardwebhooks'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
+
+interface WebhookPayload {
+  type: string
+  data: {
+    metadata?: {
+      supabase_user_id?: string
+    }
+    customer?: {
+      customer_id?: string
+    }
+    [key: string]: unknown
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,11 +39,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
     }
 
-    // Debug log — shows us exactly what Dodo is sending
-    
     if (payload.type === 'payment.succeeded') {
       const userId = payload.data.metadata?.supabase_user_id
-      
 
       if (userId) {
         const { error } = await supabase
@@ -51,8 +60,6 @@ export async function POST(req: NextRequest) {
         }
 
         console.log('User upgraded to pro:', userId)
-      } else {
-        console.log('No supabase_user_id found in metadata')
       }
     }
 
