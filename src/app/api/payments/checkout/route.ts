@@ -28,7 +28,6 @@ export async function POST() {
       customer: {
         email: user.email!,
         name: user.email!,
-        create_new_customer: false,
       },
       product_cart: [
         {
