@@ -54,9 +54,8 @@ export default function CheckPage() {
         return
       }
 
-      // Store report in sessionStorage and redirect to report page
-      sessionStorage.setItem('hypecheckReport', JSON.stringify(data.report))
-      router.push('/report')
+      // Route to the canonical public URL for this report
+      router.push(`/report/${data.slug}`)
     } catch {
       setError('Network error. Please check your connection and try again.')
       setLoading(false)

@@ -1,10 +1,15 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { customAlphabet } from 'nanoid'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
+
+// Slug alphabet drops 0/O/1/l/i to avoid mis-reads from screenshots and spoken URLs.
+// 10 chars from a 32-char alphabet = ~10^15 combinations. Collisions effectively impossible at indie scale.
+const generateSlug = customAlphabet('23456789abcdefghjkmnpqrstuvwxyz', 10)
 
 const SYSTEM_PROMPT = `You are HypeCheck — a brutally honest, data-driven startup idea validator.
 Your job is to analyse a startup or side project idea and return a structured validation report.
@@ -141,19 +146,25 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Save report to Supabase ─────────────────────────────────────────────
+    const slug = generateSlug()
+
     const { error: insertError } = await supabase
       .from('reports')
       .insert({
         user_id: user.id,
         idea_text: idea.trim(),
         report_data: report,
+        slug,
       })
 
     if (insertError) {
       console.error('Failed to save report to Supabase:', insertError)
+      // Still return the report so the user sees their analysis,
+      // but skip the slug since it's not actually persisted.
+      return NextResponse.json({ report })
     }
 
-    return NextResponse.json({ report })
+    return NextResponse.json({ report, slug })
 
   } catch (error) {
     console.error('HypeCheck API error:', error)

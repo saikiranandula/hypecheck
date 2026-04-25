@@ -35,8 +35,9 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Protected routes — redirect to login if not authenticated
-  if (!user && (pathname.startsWith('/check') || pathname.startsWith('/report'))) {
+  // Protected routes — redirect to login if not authenticated.
+  // /report/[slug] is intentionally public; only the bare /report route (sessionStorage flow) requires auth.
+  if (!user && (pathname.startsWith('/check') || pathname === '/report')) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
