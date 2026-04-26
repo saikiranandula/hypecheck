@@ -1,25 +1,11 @@
 import { Verdict } from '@/lib/types'
+import { getScoreColour, VerdictBadge } from './VerdictBadge'
 
 interface ReportHeaderProps {
   ideaTitle: string
   hypeScore: number
   verdict: Verdict
   oneLinerSummary: string
-}
-
-function getScoreColour(score: number): string {
-  if (score >= 70) return '#7C3AED'
-  if (score >= 40) return '#F59E0B'
-  return '#EF4444'
-}
-
-function getVerdictStyles(verdict: Verdict): string {
-  const base = 'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold'
-  if (verdict === 'Build')
-    return `${base} bg-[#7C3AED]/20 text-[#A78BFA] border border-[#7C3AED]/40`
-  if (verdict === "Don't Build")
-    return `${base} bg-[#EF4444]/20 text-[#FCA5A5] border border-[#EF4444]/40`
-  return `${base} bg-[#F59E0B]/20 text-[#FCD34D] border border-[#F59E0B]/40`
 }
 
 function ScoreRing({ score }: { score: number }) {
@@ -88,7 +74,7 @@ export default function ReportHeader({
           <h1 className="text-2xl font-semibold leading-tight text-[#F5F5F5] max-w-[500px]">
             {ideaTitle}
           </h1>
-          <span className={getVerdictStyles(verdict)}>{verdict}</span>
+          <VerdictBadge verdict={verdict} />
           <p className="text-[15px] leading-relaxed text-[#888888] max-w-[480px]">
             {oneLinerSummary}
           </p>

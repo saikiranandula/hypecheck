@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { UpgradePrompt } from '@/components/UpgradePrompt'
 
@@ -86,12 +87,20 @@ export default function CheckPage() {
               AI-generated validation report in seconds.
             </p>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="shrink-0 mt-1 text-[13px] text-[#555555] hover:text-[#F5F5F5] transition-colors"
-          >
-            Sign out
-          </button>
+          <div className="flex shrink-0 items-center gap-4 mt-1">
+            <Link
+              href="/reports"
+              className="text-[13px] text-[#555555] hover:text-[#F5F5F5] transition-colors"
+            >
+              My reports
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="text-[13px] text-[#555555] hover:text-[#F5F5F5] transition-colors"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
 
         {/* Form */}
