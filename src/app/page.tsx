@@ -1,4 +1,15 @@
-export default function Home() {
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { signOut } from "./actions";
+
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const ctaHref = user ? "/check" : "/login";
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       {/* ── Sticky Nav ─────────────────────────────────────────────── */}
@@ -8,12 +19,39 @@ export default function Home() {
             HypeCheck{" "}
             <span className="font-normal text-slate-400">by NullHype AI</span>
           </span>
-          <a
-            href="#"
-            className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-orange-400"
-          >
-            Check My Idea
-          </a>
+          <div className="flex items-center gap-4 sm:gap-6">
+            {user ? (
+              <>
+                <Link
+                  href="/reports"
+                  className="text-sm text-slate-400 transition-colors hover:text-white"
+                >
+                  My reports
+                </Link>
+                <form action={signOut}>
+                  <button
+                    type="submit"
+                    className="text-sm text-slate-400 transition-colors hover:text-white"
+                  >
+                    Sign out
+                  </button>
+                </form>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="text-sm text-slate-400 transition-colors hover:text-white"
+              >
+                Sign in
+              </Link>
+            )}
+            <Link
+              href={ctaHref}
+              className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-orange-400"
+            >
+              Check My Idea
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -34,13 +72,13 @@ export default function Home() {
               verdict. In 60 seconds.
             </p>
             <div className="mt-10 flex flex-col items-center gap-3">
-              <a
-                href="#"
+              <Link
+                href={ctaHref}
                 className="inline-flex flex-col items-center rounded-xl bg-orange-500 px-10 py-4 shadow-lg shadow-orange-900/40 transition-colors hover:bg-orange-400"
               >
                 <span className="text-base font-bold text-white">Check My Idea</span>
                 <span className="text-xs font-normal text-orange-100/80">$5 per report</span>
-              </a>
+              </Link>
               <p className="text-sm text-slate-500">
                 No subscription required. Pay once, get your verdict.
               </p>
@@ -160,12 +198,12 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <a
-                  href="#"
+                <Link
+                  href={ctaHref}
                   className="mt-auto rounded-lg border border-orange-500 px-5 py-3 text-center text-sm font-semibold text-orange-400 transition-colors hover:bg-orange-500/10"
                 >
                   Get started
-                </a>
+                </Link>
               </div>
 
               {/* Unlimited — highlighted */}
@@ -192,12 +230,12 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <a
-                  href="#"
+                <Link
+                  href={ctaHref}
                   className="mt-auto rounded-lg bg-orange-500 px-5 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-orange-400"
                 >
                   Start unlimited
-                </a>
+                </Link>
               </div>
             </div>
           </div>
